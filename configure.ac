@@ -84,26 +84,7 @@ AC_ARG_WITH([rootlibdir],
         [], [with_rootlibdir=$libdir])
 AC_SUBST([rootlibdir], [$with_rootlibdir])
 
-AC_ARG_WITH([xz],
-	AS_HELP_STRING([--with-xz], [handle Xz-compressed modules @<:@default=disabled@:>@]),
-	[], [with_xz=no])
-AS_IF([test "x$with_xz" != "xno"], [
-	PKG_CHECK_MODULES([liblzma], [liblzma >= 4.99])
-	AC_DEFINE([ENABLE_XZ], [1], [Enable Xz for modules.])
-], [
-	AC_MSG_NOTICE([Xz support not requested])
-])
 CC_FEATURE_APPEND([with_features], [with_xz], [XZ])
-
-AC_ARG_WITH([zlib],
-	AS_HELP_STRING([--with-zlib], [handle gzipped modules @<:@default=disabled@:>@]),
-	[], [with_zlib=no])
-AS_IF([test "x$with_zlib" != "xno"], [
-	PKG_CHECK_MODULES([zlib], [zlib])
-	AC_DEFINE([ENABLE_ZLIB], [1], [Enable zlib for modules.])
-], [
-	AC_MSG_NOTICE([zlib support not requested])
-])
 CC_FEATURE_APPEND([with_features], [with_zlib], [ZLIB])
 
 AC_ARG_WITH([bashcompletiondir],
@@ -158,22 +139,7 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 	AC_DEFINE(ENABLE_DEBUG, [1], [Debug messages.])
 ])
 
-AC_ARG_ENABLE([python],
-	AS_HELP_STRING([--enable-python], [enable Python libkmod bindings @<:@default=disabled@:>@]),
-	[], [enable_python=no])
-AS_IF([test "x$enable_python" = "xyes"], [
-	AM_PATH_PYTHON(,,[:])
-	AC_PATH_PROG([CYTHON], [cython], [:])
-
-	PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}],
-			  [have_python=yes],
-			  [PKG_CHECK_MODULES([PYTHON], [python],
-					     [have_python=yes],
-					     [have_python=no])])
-
-	AS_IF([test "x$have_python" = xno],
-	      [AC_MSG_ERROR([*** python support requested but libraries not found])])
-])
+AM_PATH_PYTHON(,,[:])
 AM_CONDITIONAL([BUILD_PYTHON], [test "x$enable_python" = "xyes"])
 
 AC_ARG_ENABLE([coverage],
